@@ -10,13 +10,15 @@ pub fn main() anyerror!void {
   var chunk = Chunk.init();
   defer chunk.free() catch unreachable;
 
-  _ = chunk.writeByte(@enumToInt(OpCode.opNumConst));
-  var constant = chunk.addNumConst(1.2);
-  _ = chunk.writeByte(constant);
+  var i: usize = 0;
+  while (i < 100) {
+    i += 1;
 
-  _ = chunk.writeByte(@enumToInt(OpCode.opNumConst));
-  constant = chunk.addNumConst(1.2575);
-  _ = chunk.writeByte(constant);
+    _ = chunk.writeSimpleOp(OpCode.opReturn, 1);
+    _ = chunk.writeNumConstOp(1.0, 1);
+    _ = chunk.writeNumConstOp(1.5, 1);
+    _ = chunk.writeNumConstOp(2.0, 1);
+  }
 
   debug.disassembleChunk(&chunk, "test chunk");
 }

@@ -5,8 +5,8 @@ const Allocator = std.mem.Allocator;
 pub fn DynamicArray(comptime T: type) type {
   return struct {
     allocator: *Allocator,
-    capacity: u8,
-    count: u8,
+    capacity: usize,
+    count: usize,
     items: [*]T,
 
     pub fn init(allocator: ?*Allocator) @This() {
@@ -22,7 +22,7 @@ pub fn DynamicArray(comptime T: type) type {
       self.capacity = if (self.capacity < 8) 8 else self.capacity * 2;
     }
 
-    pub fn add(self: *@This(), item: T) anyerror!u8 {
+    pub fn add(self: *@This(), item: T) anyerror!usize {
       if (self.capacity < self.count + 1) {
         const oldCapacity = self.capacity;
         self.growCapacity();
