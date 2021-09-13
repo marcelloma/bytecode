@@ -29,6 +29,7 @@ pub fn simpleInstruction(instruction: []const u8, offset: usize) usize {
 pub fn constantInstruction(instruction: []const u8, chunk: *Chunk, offset: usize) usize {
   const constant = chunk.bytes.items[offset + 1];
   const value = chunk.numConsts.items[constant];
+
   print("{s} {:0>3} {:.}\n", .{instruction, constant, value});
   return offset + 2;
 }

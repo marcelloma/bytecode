@@ -8,6 +8,7 @@ const debug = @import("./debug.zig");
 
 pub fn main() anyerror!void {
   var chunk = Chunk.init();
+  defer chunk.free() catch unreachable;
 
   _ = chunk.writeByte(@enumToInt(OpCode.opNumConst));
   var constant = chunk.addNumConst(1.2);
@@ -16,12 +17,6 @@ pub fn main() anyerror!void {
   _ = chunk.writeByte(@enumToInt(OpCode.opNumConst));
   constant = chunk.addNumConst(1.2575);
   _ = chunk.writeByte(constant);
-
-  // var a: u8 = chunk.writeByte(@enumToInt(OpCode.opReturn));
-
-  // print("{d}\n", .{chunk.writeByte(@enumToInt(OpCode.opReturn))});
-  // print("{d}\n", .{chunk.writeByte(@enumToInt(OpCode.opReturn))});
-  // print("{d}\n", .{chunk.writeByte(@enumToInt(OpCode.opReturn))});
 
   debug.disassembleChunk(&chunk, "test chunk");
 }
