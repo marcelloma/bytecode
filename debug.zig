@@ -3,20 +3,35 @@ const print = @import("std").debug.print;
 const Chunk = @import("./chunk.zig").Chunk;
 const OpCode = @import("./common.zig").OpCode;
 
+pub fn getLine(chunk: *Chunk, offset: usize) usize {
+  var line: usize = 0;
+  var lineOffset: usize = 0;
+  var totalOffset: usize = 0;
+
+  while (totalOffset <= offset) {
+    totalOffset += chunk.lines.items[lineOffset];
+    lineOffset += 2;
+  }
+
+  return chunk.lines.items[lineOffset-1];
+}
+
 pub fn disassembleChunk(chunk: *Chunk, name: []const u8) void {
   print("== {s} ==\n", .{name});
 
   var offset: usize = 0;
+  var prevLine: usize = 0;
   while (offset < chunk.bytes.count) {
-    offset = disassembleInstruction(chunk, offset);
+    const line = getLine(chunk, offset);
+    offset = disassembleInstruction(chunk, offset, line, prevLine);
+    prevLine = line;
   }
 }
 
-pub fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
+pub fn disassembleInstruction(chunk: *Chunk, offset: usize, line: usize, prevLine: usize) usize {
   print("{:0>5} ", .{offset});
 
-  const line = chunk.lines.items[offset];
-  if(offset > 0 and line == chunk.lines.items[offset - 1]) {
+  if(offset > 0 and line == prevLine) {
     print("  | ", .{});
   } else {
     print("{:0>3} ", .{line});
