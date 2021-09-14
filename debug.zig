@@ -28,6 +28,20 @@ pub fn disassembleChunk(chunk: *Chunk, name: []const u8) void {
   }
 }
 
+pub fn logInstruction(chunk: *Chunk, offset: usize) void {
+  if (chunk.bytes.count > offset) {
+    print("{:0>5} ", .{offset});
+
+    _ = switch (@intToEnum(OpCode, chunk.bytes.items[offset])) {
+      .opReturn => simpleInstruction("OP_RETURN", offset),
+      .opNumConst => constantInstruction("OP_NUM_CONST", chunk, offset),
+      .opLongNumConst => longConstantInstruction("OP_LONG_NUM_CONST", chunk, offset),
+      _ => {},
+    };
+  }
+}
+
+
 pub fn disassembleInstruction(chunk: *Chunk, offset: usize, line: usize, prevLine: usize) usize {
   print("{:0>5} ", .{offset});
 
@@ -41,6 +55,7 @@ pub fn disassembleInstruction(chunk: *Chunk, offset: usize, line: usize, prevLin
     .opReturn => simpleInstruction("OP_RETURN", offset),
     .opNumConst => constantInstruction("OP_NUM_CONST", chunk, offset),
     .opLongNumConst => longConstantInstruction("OP_LONG_NUM_CONST", chunk, offset),
+    _ => {},
   };
 }
 
