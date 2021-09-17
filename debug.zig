@@ -2,6 +2,7 @@ const print = @import("std").debug.print;
 
 const Chunk = @import("./chunk.zig").Chunk;
 const OpCode = @import("./common.zig").OpCode;
+const Vm = @import("./vm.zig").Vm;
 
 pub fn getLine(chunk: *Chunk, offset: usize) usize {
   var line: usize = 0;
@@ -36,6 +37,10 @@ pub fn logInstruction(chunk: *Chunk, offset: usize) void {
       .opReturn => simpleInstruction("OP_RETURN", offset),
       .opNumConst => constantInstruction("OP_NUM_CONST", chunk, offset),
       .opLongNumConst => longConstantInstruction("OP_LONG_NUM_CONST", chunk, offset),
+      .opAdd => simpleInstruction("OP_ADD", offset),
+      .opSub => simpleInstruction("OP_SUB", offset),
+      .opMul => simpleInstruction("OP_MUL", offset),
+      .opDiv => simpleInstruction("OP_DIV", offset),
       _ => {},
     };
   }
@@ -55,6 +60,10 @@ pub fn disassembleInstruction(chunk: *Chunk, offset: usize, line: usize, prevLin
     .opReturn => simpleInstruction("OP_RETURN", offset),
     .opNumConst => constantInstruction("OP_NUM_CONST", chunk, offset),
     .opLongNumConst => longConstantInstruction("OP_LONG_NUM_CONST", chunk, offset),
+    .opAdd => simpleInstruction("OP_ADD", offset),
+    .opSub => simpleInstruction("OP_SUB", offset),
+    .opMul => simpleInstruction("OP_MUL", offset),
+    .opDiv => simpleInstruction("OP_DIV", offset),
     _ => {},
   };
 }
@@ -81,4 +90,19 @@ pub fn longConstantInstruction(instruction: []const u8, chunk: *Chunk, offset: u
 
   print("{s} {:0>3} {:.}\n", .{instruction, constant, value});
   return offset + 4;
+}
+
+pub fn dumpStack(vm: *Vm) void {
+  print("\n", .{});
+
+  var firstPtr: [*]f128 = &(vm.stack.data);
+  var topPtr: [*]f128 = vm.stack.topPtr - 1;
+
+  while (@ptrToInt(topPtr) >= @ptrToInt(firstPtr)) {
+    print("[ ", .{});
+    print("{*} {:.}", .{topPtr, topPtr[0]});
+    print(" ]", .{});
+    topPtr -= 1;
+  }
+  print("\n", .{});
 }

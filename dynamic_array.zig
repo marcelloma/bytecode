@@ -1,5 +1,5 @@
 const std = @import("std");
-
+const print = std.debug.print;
 const Allocator = std.mem.Allocator;
 
 pub fn DynamicArray(comptime T: type) type {
@@ -43,7 +43,6 @@ pub fn DynamicArray(comptime T: type) type {
 
     pub fn free(self: *@This()) anyerror!void {
       self.allocator.free(self.items[0..self.capacity]);
-      self.* = @This().init(self.allocator);
     }
   };
 }
